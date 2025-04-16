@@ -1,4 +1,46 @@
 from collections import defaultdict
+import argparse
+import sys
+import mido
+
+def extract_note_events(midi_file):
+    """
+    Extract note events and PPQN from a MIDI file
+    
+    Args:
+        midi_file (str): Path to MIDI file
+        
+    Returns:
+        tuple: (note_events, ppqn)
+    """
+    try:
+        midi = mido.MidiFile(midi_file)
+        ppqn = midi.ticks_per_beat
+        
+        note_events = []
+        
+        # Process each track
+        for track in midi.tracks:
+            # Process messages in this track
+            for msg in track:
+                if msg.type in ('note_on', 'note_off'):
+                    # Convert velocity=0 note_on messages to note_off
+                    if msg.type == 'note_on' and msg.velocity == 0:
+                        msg_type = 'note_off'
+                    else:
+                        msg_type = msg.type
+                    
+                    note_events.append({
+                        'type': msg_type,
+                        'note': msg.note,
+                        'time': msg.time
+                    })
+        
+        return note_events, ppqn
+    
+    except Exception as e:
+        print(f"Error processing {midi_file}: {str(e)}")
+        return None, None
 
 def analyze_rhythm_pattern(note_events, ppqn):
     """
@@ -263,68 +305,18 @@ def get_note_name(midi_note):
     return f"{note}{octave}"
 
 def main():
-    # MIDI data provided by user
-    ppqn = 128
-    note_events = [
-        {'type': 'note_on', 'note': 52, 'time': 0},
-        {'type': 'note_off', 'note': 52, 'time': 128},
-        {'type': 'note_on', 'note': 55, 'time': 0},
-        {'type': 'note_off', 'note': 55, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 32},
-        {'type': 'note_off', 'note': 52, 'time': 64},
-        {'type': 'note_on', 'note': 59, 'time': 32},
-        {'type': 'note_off', 'note': 59, 'time': 16},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 16},
-        {'type': 'note_on', 'note': 60, 'time': 16},
-        {'type': 'note_off', 'note': 60, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 0},
-        {'type': 'note_off', 'note': 52, 'time': 48},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 128},
-        {'type': 'note_on', 'note': 55, 'time': 0},
-        {'type': 'note_off', 'note': 55, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 32},
-        {'type': 'note_off', 'note': 52, 'time': 64},
-        {'type': 'note_on', 'note': 59, 'time': 32},
-        {'type': 'note_off', 'note': 59, 'time': 16},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 16},
-        {'type': 'note_on', 'note': 60, 'time': 16},
-        {'type': 'note_off', 'note': 60, 'time': 64},
-        {'type': 'note_on', 'note': 62, 'time': 0},
-        {'type': 'note_off', 'note': 62, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 0},
-        {'type': 'note_off', 'note': 52, 'time': 128},
-        {'type': 'note_on', 'note': 55, 'time': 0},
-        {'type': 'note_off', 'note': 55, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 32},
-        {'type': 'note_off', 'note': 52, 'time': 64},
-        {'type': 'note_on', 'note': 59, 'time': 32},
-        {'type': 'note_off', 'note': 59, 'time': 16},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 16},
-        {'type': 'note_on', 'note': 60, 'time': 16},
-        {'type': 'note_off', 'note': 60, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 0},
-        {'type': 'note_off', 'note': 52, 'time': 48},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 128},
-        {'type': 'note_on', 'note': 55, 'time': 0},
-        {'type': 'note_off', 'note': 55, 'time': 64},
-        {'type': 'note_on', 'note': 52, 'time': 32},
-        {'type': 'note_off', 'note': 52, 'time': 64},
-        {'type': 'note_on', 'note': 59, 'time': 32},
-        {'type': 'note_off', 'note': 59, 'time': 16},
-        {'type': 'note_on', 'note': 52, 'time': 16},
-        {'type': 'note_off', 'note': 52, 'time': 16},
-        {'type': 'note_on', 'note': 60, 'time': 16},
-        {'type': 'note_off', 'note': 60, 'time': 64},
-        {'type': 'note_on', 'note': 62, 'time': 0},
-        {'type': 'note_off', 'note': 62, 'time': 64},
-    ]
+    parser = argparse.ArgumentParser(description='Analyze a MIDI file for rhythm patterns')
+    parser.add_argument('midi_file', help='Path to the MIDI file to analyze')
     
-    analyze_rhythm_pattern(note_events, ppqn)
+    args = parser.parse_args()
+    
+    note_events, ppqn = extract_note_events(args.midi_file)
+    
+    if note_events and ppqn:
+        analyze_rhythm_pattern(note_events, ppqn)
+    else:
+        print(f"Could not analyze {args.midi_file}")
+        sys.exit(1)
 
 if __name__ == '__main__':
     main() 
