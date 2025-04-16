@@ -182,3 +182,4 @@ cython_debug/
 repomix-output.txt
 
 *.png
+/stats
