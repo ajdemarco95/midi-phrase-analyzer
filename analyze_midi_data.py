@@ -49,10 +49,13 @@ def analyze_rhythm_pattern(note_events, ppqn):
     Args:
         note_events (list): List of note events
         ppqn (int): Pulses Per Quarter Note
+        
+    Returns:
+        set: Set of unique rhythm patterns in the file (as frozensets)
     """
     if not note_events:
         print("No note events to analyze")
-        return
+        return set()
     
     # Convert note timings to absolute positions
     absolute_times = []
@@ -266,6 +269,39 @@ def analyze_rhythm_pattern(note_events, ppqn):
     density = len(absolute_times) / int(measures)
     print(f"Rhythmic density: {density:.2f} onsets per measure")
     
+    # Analyze unique 1-bar rhythm patterns
+    unique_patterns = set()
+    for pattern in measure_onset_patterns:
+        unique_patterns.add(frozenset(pattern))
+    
+    print(f"\nNumber of unique 1-bar rhythm patterns: {len(unique_patterns)}")
+    print("\nUnique 1-bar rhythm patterns:")
+    print("-" * 40)
+    
+    # Convert frozensets to sorted lists for better display
+    sorted_patterns = [sorted(list(pattern)) for pattern in unique_patterns]
+    sorted_patterns.sort(key=lambda x: (len(x), x if x else [-1]))  # Sort by length, then by content
+    
+    for i, pattern in enumerate(sorted_patterns, 1):
+        # Convert 16th note positions to more readable format
+        readable_positions = []
+        for pos in pattern:
+            beat = (pos // 4) + 1
+            subdivision = pos % 4
+            
+            if subdivision == 0:
+                beat_pos = f"{beat}"
+            elif subdivision == 1:
+                beat_pos = f"{beat}.1"
+            elif subdivision == 2:
+                beat_pos = f"{beat}.2"
+            else:
+                beat_pos = f"{beat}.3"
+                
+            readable_positions.append(beat_pos)
+        
+        print(f"Pattern {i}: {' '.join(readable_positions)}")
+    
     # Identify section boundaries based on melodic pattern changes
     if len(melodic_pattern_sequence) > 1:
         section_boundaries = [0]  # Start of the piece
@@ -296,6 +332,7 @@ def analyze_rhythm_pattern(note_events, ppqn):
         form = ''.join([section['pattern'] for section in sections])
         print(f"\nOverall melodic form: {form}")
         
+    return unique_patterns
 
 def get_note_name(midi_note):
     """Convert MIDI note number to note name"""

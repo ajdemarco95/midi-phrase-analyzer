@@ -176,3 +176,7 @@ cython_debug/
 # MIDI files
 *.mid
 *.midi
+
+# Repo mix ignore
+.repomixignore
+repomix-output.txt
