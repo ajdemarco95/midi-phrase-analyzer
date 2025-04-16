@@ -44,7 +44,6 @@ def process_midi_file(midi_file):
 def main():
     parser = argparse.ArgumentParser(description='Analyze MIDI files for rhythm patterns')
     parser.add_argument('directory', help='Directory to search for MIDI files')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Print verbose output')
     
     args = parser.parse_args()
     
@@ -58,12 +57,7 @@ def main():
         print(f"No MIDI files found in {args.directory}")
         sys.exit(0)
     
-    if args.verbose:
-        print(f"Found {len(midi_files)} MIDI files:")
-        for file in midi_files:
-            print(f"  - {file}")
-    else:
-        print(f"Found {len(midi_files)} MIDI files")
+    print(f"Found {len(midi_files)} MIDI files")
     
     for midi_file in midi_files:
         process_midi_file(midi_file)
