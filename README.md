@@ -10,6 +10,10 @@ A Python tool for analyzing rhythmic and melodic patterns in MIDI files. This to
 - **Form Visualization**: Displays the overall musical form using letter notation (e.g., AABA)
 - **Note Range Analysis**: Shows the range of notes used in the composition
 - **Rhythmic Density Calculation**: Computes the average number of notes per measure
+- **Chart Visualization**: Creates graphical representations of patterns, including:
+  - Pattern distribution bar charts comparing rhythmic and melodic patterns
+  - Detailed grid visualization of unique rhythm patterns
+  - Summary charts of the most common rhythm patterns with frequency information
 
 ## Installation
 
@@ -70,6 +74,35 @@ Rhythmic density: 7.00 onsets per measure
 Overall melodic form: ABAB
 ```
 
+## Chart Visualizations
+
+The tool generates several types of visualizations to help understand musical patterns:
+
+### Pattern Distribution Chart
+
+A grouped bar chart showing the distribution of rhythmic and melodic phrase patterns across analyzed MIDI files. This visualization helps identify which patterns are most common in your collection.
+
+![Pattern Distribution Chart](stats/pattern_distribution.png)
+
+### Rhythm Pattern Visualization
+
+A detailed grid visualization showing unique 1-bar rhythm patterns found in the analyzed MIDI files. Each pattern is displayed on a 16th note grid with:
+- Blue squares indicating note onsets
+- Clear indication of beat positions
+- Frequency information (number of files containing each pattern and total occurrences)
+
+![Rhythm Pattern Visualization](stats/rhythm_patterns.png)
+
+### Rhythm Pattern Summary
+
+A combined visualization showing:
+- Grid representation of the most common rhythm patterns
+- Bar chart displaying the frequency of each pattern (by number of files or total occurrences)
+
+![Rhythm Pattern Summary](stats/rhythm_summary.png)
+
+All charts are automatically saved to a `stats` directory for easy reference.
+
 ## How It Works
 
 1. The tool parses MIDI files using the `mido` library to extract note events
@@ -77,11 +110,13 @@ Overall melodic form: ABAB
 3. It examines the pitch sequence of notes to detect melodic patterns
 4. It compares measures to identify repeated sections
 5. It maps the patterns to letter notation (A, B, C, etc.) to visualize the musical form
+6. It generates charts and visualizations to help understand the patterns
 
 ## Requirements
 
 - Python 3.6+
 - mido 1.2.10+
+- matplotlib (for visualization features)
 
 ## License
 
