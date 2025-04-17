@@ -10,6 +10,7 @@ A Python tool for analyzing rhythmic and melodic patterns in MIDI files. This to
 - **Form Visualization**: Displays the overall musical form using letter notation (e.g., AABA)
 - **Note Range Analysis**: Shows the range of notes used in the composition
 - **Rhythmic Density Calculation**: Computes the average number of notes per measure
+- **JSON Metadata Generation**: Creates a JSON metadata file for each MIDI file with phrasal information
 - **Chart Visualization**: Creates graphical representations of patterns, including:
   - Pattern distribution bar charts comparing rhythmic and melodic patterns
   - Detailed grid visualization of unique rhythm patterns
@@ -72,7 +73,32 @@ Note range: E3 to D4
 Rhythmic density: 7.00 onsets per measure
 
 Overall melodic form: ABAB
+
+Created metadata file: midi/melody.json
 ```
+
+## Metadata Files
+
+For each MIDI file processed, the tool generates a corresponding JSON metadata file that contains the phrasal information:
+
+```json
+{
+    "phrasal": {
+        "rhythmic": {
+            "pattern": "AAAA"
+        },
+        "melodic": {
+            "pattern": "ABAB"
+        }
+    }
+}
+```
+
+These metadata files can be useful for:
+- Batch processing and categorizing MIDI files
+- Integration with other music analysis tools
+- Database storage of musical pattern information
+- ML/AI training for pattern recognition
 
 ## Chart Visualizations
 

@@ -2,6 +2,7 @@
 import os
 import argparse
 import sys
+import json
 from analyze_midi_data import analyze_rhythm_pattern, extract_note_events
 from collections import Counter, defaultdict
 
@@ -268,8 +269,41 @@ def process_midi_file(midi_file, rhythm_counter, melodic_counter, unique_rhythms
         
         if melodic_pattern:
             melodic_counter[melodic_pattern] += 1
+            
+        # Create and save JSON metadata file for this MIDI file
+        create_metadata_file(midi_file, rhythm_pattern, melodic_pattern)
     else:
         print(f"Could not analyze {midi_file}")
+
+def create_metadata_file(midi_file, rhythm_pattern, melodic_pattern):
+    """
+    Create and save a JSON metadata file for a MIDI file
+    
+    Args:
+        midi_file (str): Path to MIDI file
+        rhythm_pattern (str): Rhythmic pattern (e.g. 'AABA')
+        melodic_pattern (str): Melodic pattern (e.g. 'ABAB')
+    """
+    # Create metadata structure
+    metadata = {
+        "phrasal": {
+            "rhythmic": {
+                "pattern": rhythm_pattern
+            },
+            "melodic": {
+                "pattern": melodic_pattern
+            }
+        }
+    }
+    
+    # Generate metadata filename by replacing the MIDI extension with .json
+    metadata_file = os.path.splitext(midi_file)[0] + ".json"
+    
+    # Save the metadata as JSON
+    with open(metadata_file, 'w') as f:
+        json.dump(metadata, f, indent=4)
+    
+    print(f"Created metadata file: {metadata_file}")
 
 def create_pattern_chart(rhythm_counter, melodic_counter):
     """
